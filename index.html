@@ -708,6 +708,8 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .package-card:hover {
@@ -772,7 +774,7 @@
             margin-left: 0.3rem;
         }
 
-        .package-features { margin-bottom: 2rem; }
+        .package-features { margin-bottom: 2rem; flex: 1; }
 
         .feature-item {
             display: flex;
@@ -2554,6 +2556,8 @@
         </div>
     </div>
 
+    <!-- jsPDF 제거됨 -->
+
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
@@ -2564,6 +2568,11 @@
     <script>
         // ============================================================
         // EMAILJS CONFIGURATION
+        // ============================================================
+        emailjs.init('_6VVBfwH-KPfClOJa');
+
+        // ============================================================
+        // EMAILJS
         // ============================================================
         emailjs.init('_6VVBfwH-KPfClOJa');
 
@@ -2835,6 +2844,7 @@
 
         // Initialize calendar on page load too
         generateCalendar();
+        loadBlockedDates();
         loadBlockedDates();
 
         // ============================================================
@@ -3302,95 +3312,88 @@
         });
 
         // ============================================================
-        // 계약서 미리보기 + 인쇄/PDF 저장
+        // 계약서 미리보기 + 인쇄/PDF
         // ============================================================
         function getContractData() {
             var ps = document.getElementById('contractPackage');
             var opts = [];
             if (document.getElementById('optionMakeup').checked) opts.push('메이크업 촬영 +150,000원');
-            if (document.getElementById('optionCombo').checked) {
-                opts.push('폐백+연회장 촬영 +150,000원');
-            } else {
+            if (document.getElementById('optionCombo').checked) { opts.push('폐백+연회장 촬영 +150,000원'); }
+            else {
                 if (document.getElementById('optionPaebaek').checked) opts.push('폐백 촬영 +100,000원');
                 if (document.getElementById('optionReception').checked) opts.push('연회장 촬영 +100,000원');
             }
             if (document.getElementById('optionAlbum').checked) {
-                var qa = parseInt(document.getElementById('albumQuantity').value) || 0;
-                opts.push('앨범 추가 x' + qa + ' (+' + (200000*qa).toLocaleString() + '원)');
+                var qa = parseInt(document.getElementById('albumQuantity').value)||0;
+                opts.push('앨범 추가 x'+qa+' (+' +(200000*qa).toLocaleString()+'원)');
             }
             if (document.getElementById('optionFrame').checked) {
-                var qf = parseInt(document.getElementById('frameQuantity').value) || 0;
-                opts.push('액자 추가 x' + qf + ' (+' + (250000*qf).toLocaleString() + '원)');
+                var qf = parseInt(document.getElementById('frameQuantity').value)||0;
+                opts.push('액자 추가 x'+qf+' (+' +(250000*qf).toLocaleString()+'원)');
             }
             if (document.getElementById('optionRetouch').checked) {
-                var qr = parseInt(document.getElementById('retouchQuantity').value) || 0;
-                opts.push('추가 보정 x' + qr + '장 (+' + (10000*qr).toLocaleString() + '원)');
+                var qr = parseInt(document.getElementById('retouchQuantity').value)||0;
+                opts.push('추가 보정 x'+qr+'장 (+' +(10000*qr).toLocaleString()+'원)');
             }
             return {
-                groomName: document.getElementById('contractGroomName').value || '-',
-                brideName: document.getElementById('contractBrideName').value || '-',
-                phone: document.getElementById('contractPhone').value || '-',
-                email: document.getElementById('contractEmail').value || '-',
-                address: document.getElementById('contractAddress').value || '-',
-                date: document.getElementById('contractDate').value || '-',
-                time: document.getElementById('contractTime').value || '-',
-                venueName: document.getElementById('contractVenueName').value || '-',
-                venueAddress: document.getElementById('contractVenueAddress').value || '-',
-                makeupShop: document.getElementById('makeupShopName').value || '',
-                makeupAddress: document.getElementById('makeupShopAddress').value || '',
-                makeupIn: document.getElementById('makeupTimeIn').value || '',
-                makeupOut: document.getElementById('makeupTimeOut').value || '',
-                package: ps.options[ps.selectedIndex].text || '-',
+                groomName: document.getElementById('contractGroomName').value||'-',
+                brideName: document.getElementById('contractBrideName').value||'-',
+                phone: document.getElementById('contractPhone').value||'-',
+                email: document.getElementById('contractEmail').value||'-',
+                address: document.getElementById('contractAddress').value||'-',
+                date: document.getElementById('contractDate').value||'-',
+                time: document.getElementById('contractTime').value||'-',
+                venueName: document.getElementById('contractVenueName').value||'-',
+                venueAddress: document.getElementById('contractVenueAddress').value||'-',
+                makeupShop: document.getElementById('makeupShopName').value||'',
+                makeupAddress: document.getElementById('makeupShopAddress').value||'',
+                makeupIn: document.getElementById('makeupTimeIn').value||'',
+                makeupOut: document.getElementById('makeupTimeOut').value||'',
+                package: ps.options[ps.selectedIndex].text||'-',
                 options: opts,
                 basePrice: document.getElementById('basePrice').textContent,
                 optionsPrice: document.getElementById('optionsPrice').textContent,
                 totalPrice: document.getElementById('totalPrice').textContent,
                 deposit: '200,000원',
-                remaining: document.getElementById('remainingAmount').value || '-',
-                agreeSNS: document.getElementById('agreeSNS').checked ? '동의' : '미동의',
+                remaining: document.getElementById('remainingAmount').value||'-',
+                agreeSNS: document.getElementById('agreeSNS').checked?'동의':'미동의',
                 createdAt: new Date().toLocaleString('ko-KR')
             };
         }
 
         function buildContractHTML(d) {
-            var tL = 'padding:10px 14px;font-weight:bold;width:38%;background:#FAF8F3;border-bottom:1px solid #E8E6E1;';
-            var tR = 'padding:10px 14px;border-bottom:1px solid #E8E6E1;';
-            var tH = 'background:#C9A96E;padding:10px 14px;text-align:left;color:white;';
-            var tS = 'width:100%;border-collapse:collapse;margin-bottom:1.5rem;font-size:0.95rem;';
-            var mu = '';
-            if (d.makeupShop) {
-                mu += '<tr><td style="' + tL + '">메이크업 샵</td><td style="' + tR + '">' + d.makeupShop + '</td></tr>';
-                if (d.makeupAddress) mu += '<tr><td style="' + tL + '">메이크업 주소</td><td style="' + tR + '">' + d.makeupAddress + '</td></tr>';
-                if (d.makeupIn) mu += '<tr><td style="' + tL + '">메이크업 시간</td><td style="' + tR + '">' + d.makeupIn + ' ~ ' + d.makeupOut + '</td></tr>';
-            }
-            var h = '<div style="font-family:Noto Serif KR,serif;max-width:700px;margin:0 auto;color:#2C2C2C;">';
-            h += '<div style="text-align:center;padding:2rem 0 1.5rem;border-bottom:2px solid #C9A96E;margin-bottom:2rem;">';
-            h += '<h1 style="font-family:Playfair Display,serif;color:#C9A96E;font-size:2rem;margin:0 0 0.3rem;letter-spacing:3px;">LaVella Wedding</h1>';
-            h += '<p style="font-size:1.1rem;margin:0;">웨딩 촬영 계약서</p>';
-            h += '<p style="font-size:0.85rem;color:#888;margin-top:0.5rem;">작성일: ' + d.createdAt + '</p></div>';
-            h += '<table style="' + tS + '"><tr><th colspan="2" style="' + tH + '">고객 정보</th></tr>';
-            h += '<tr><td style="' + tL + '">신랑</td><td style="' + tR + '">' + d.groomName + '</td></tr>';
-            h += '<tr><td style="' + tL + '">신부</td><td style="' + tR + '">' + d.brideName + '</td></tr>';
-            h += '<tr><td style="' + tL + '">연락처</td><td style="' + tR + '">' + d.phone + '</td></tr>';
-            h += '<tr><td style="' + tL + '">이메일</td><td style="' + tR + '">' + d.email + '</td></tr></table>';
-            h += '<table style="' + tS + '"><tr><th colspan="2" style="' + tH + '">예식 정보</th></tr>';
-            h += '<tr><td style="' + tL + '">예식 날짜</td><td style="' + tR + '">' + d.date + '</td></tr>';
-            h += '<tr><td style="' + tL + '">예식 시간</td><td style="' + tR + '">' + d.time + '</td></tr>';
-            h += '<tr><td style="' + tL + '">예식장</td><td style="' + tR + '">' + d.venueName + '</td></tr>';
-            h += '<tr><td style="' + tL + '">예식장 주소</td><td style="' + tR + '">' + d.venueAddress + '</td></tr>';
-            h += mu + '</table>';
-            h += '<table style="' + tS + '"><tr><th colspan="2" style="' + tH + '">촬영 패키지</th></tr>';
-            h += '<tr><td style="' + tL + '">선택 패키지</td><td style="' + tR + '">' + d.package + '</td></tr>';
-            h += '<tr><td style="' + tL + '">추가 옵션</td><td style="' + tR + '">' + (d.options.length > 0 ? d.options.join('<br>') : '-') + '</td></tr>';
-            h += '<tr><td style="' + tL + '">기본 패키지</td><td style="' + tR + '">' + d.basePrice + '</td></tr>';
-            h += '<tr><td style="' + tL + '">옵션 합계</td><td style="' + tR + '">' + d.optionsPrice + '</td></tr>';
-            h += '<tr style="background:#F5EFE0;"><td style="padding:12px 14px;font-weight:bold;color:#C9A96E;">총 계약금액</td><td style="padding:12px 14px;font-weight:bold;color:#C9A96E;">' + d.totalPrice + '</td></tr>';
-            h += '<tr><td style="' + tL + '">계약금</td><td style="' + tR + '">' + d.deposit + '</td></tr>';
-            h += '<tr><td style="' + tL + '">잔금</td><td style="' + tR + '">' + d.remaining + '</td></tr></table>';
-            h += '<table style="' + tS + '"><tr><th colspan="2" style="' + tH + '">동의 사항</th></tr>';
-            h += '<tr><td style="' + tL + '">SNS 홍보 동의</td><td style="' + tR + '">' + d.agreeSNS + '</td></tr></table>';
-            h += '<div style="padding:1.2rem;background:#F5EFE0;border-left:3px solid #C9A96E;font-size:0.88rem;color:#666;line-height:1.8;">';
-            h += '카카오뱅크 3333-34-8554081 (예금주: 임준혁)<br>계약금 200,000원 입금 후 예약 확정</div></div>';
+            var tL='padding:10px 14px;font-weight:bold;width:38%;background:#FAF8F3;border-bottom:1px solid #E8E6E1;';
+            var tR='padding:10px 14px;border-bottom:1px solid #E8E6E1;';
+            var tH='background:#C9A96E;padding:10px 14px;text-align:left;color:white;';
+            var tS='width:100%;border-collapse:collapse;margin-bottom:1.5rem;font-size:0.95rem;';
+            var mu='';
+            if(d.makeupShop){mu+='<tr><td style="'+tL+'">메이크업 샵</td><td style="'+tR+'">'+d.makeupShop+'</td></tr>';}
+            var h='<div style="font-family:Noto Serif KR,serif;max-width:700px;margin:0 auto;color:#2C2C2C;">';
+            h+='<div style="text-align:center;padding:2rem 0 1.5rem;border-bottom:2px solid #C9A96E;margin-bottom:2rem;">';
+            h+='<h1 style="font-family:Playfair Display,serif;color:#C9A96E;font-size:2rem;margin:0 0 0.3rem;">LaVella Wedding</h1>';
+            h+='<p style="font-size:1.1rem;margin:0;">웨딩 촬영 계약서</p>';
+            h+='<p style="font-size:0.85rem;color:#888;margin-top:0.5rem;">작성일: '+d.createdAt+'</p></div>';
+            h+='<table style="'+tS+'"><tr><th colspan="2" style="'+tH+'">고객 정보</th></tr>';
+            h+='<tr><td style="'+tL+'">신랑</td><td style="'+tR+'">'+d.groomName+'</td></tr>';
+            h+='<tr><td style="'+tL+'">신부</td><td style="'+tR+'">'+d.brideName+'</td></tr>';
+            h+='<tr><td style="'+tL+'">연락처</td><td style="'+tR+'">'+d.phone+'</td></tr>';
+            h+='<tr><td style="'+tL+'">이메일</td><td style="'+tR+'">'+d.email+'</td></tr></table>';
+            h+='<table style="'+tS+'"><tr><th colspan="2" style="'+tH+'">예식 정보</th></tr>';
+            h+='<tr><td style="'+tL+'">예식 날짜</td><td style="'+tR+'">'+d.date+'</td></tr>';
+            h+='<tr><td style="'+tL+'">예식 시간</td><td style="'+tR+'">'+d.time+'</td></tr>';
+            h+='<tr><td style="'+tL+'">예식장</td><td style="'+tR+'">'+d.venueName+'</td></tr>';
+            h+='<tr><td style="'+tL+'">예식장 주소</td><td style="'+tR+'">'+d.venueAddress+'</td></tr>';
+            h+=mu+'</table>';
+            h+='<table style="'+tS+'"><tr><th colspan="2" style="'+tH+'">촬영 패키지</th></tr>';
+            h+='<tr><td style="'+tL+'">선택 패키지</td><td style="'+tR+'">'+d.package+'</td></tr>';
+            h+='<tr><td style="'+tL+'">추가 옵션</td><td style="'+tR+'">'+(d.options.length>0?d.options.join('<br>'):'-')+'</td></tr>';
+            h+='<tr style="background:#F5EFE0;"><td style="padding:12px 14px;font-weight:bold;color:#C9A96E;">총 계약금액</td><td style="padding:12px 14px;font-weight:bold;color:#C9A96E;">'+d.totalPrice+'</td></tr>';
+            h+='<tr><td style="'+tL+'">계약금</td><td style="'+tR+'">'+d.deposit+'</td></tr>';
+            h+='<tr><td style="'+tL+'">잔금</td><td style="'+tR+'">'+d.remaining+'</td></tr></table>';
+            h+='<table style="'+tS+'"><tr><th colspan="2" style="'+tH+'">동의 사항</th></tr>';
+            h+='<tr><td style="'+tL+'">SNS 홍보 동의</td><td style="'+tR+'">'+d.agreeSNS+'</td></tr></table>';
+            h+='<div style="padding:1.2rem;background:#F5EFE0;border-left:3px solid #C9A96E;font-size:0.88rem;color:#666;line-height:1.8;">';
+            h+='카카오뱅크 3333-34-8554081 (예금주: 임준혁)<br>계약금 200,000원 입금 후 예약 확정</div></div>';
             return h;
         }
 
@@ -3413,18 +3416,17 @@
             var d = getContractData();
             var w = window.open('', '_blank', 'width=800,height=900');
             w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-                + '<title>LaVella 계약서 - ' + d.groomName + ' \u2665 ' + d.brideName + '</title>'
-                + '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">'
-                + '<style>body{font-family:"Noto Serif KR",serif;background:white;margin:0;padding:2rem;}'
-                + '@media print{@page{margin:15mm;}.no-print{display:none!important;}'
-                + '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}'
-                + '.no-print{text-align:center;margin-bottom:2rem;}'
-                + '.print-btn{padding:1rem 3rem;background:#C9A96E;color:white;border:none;font-size:1rem;cursor:pointer;letter-spacing:2px;}</style>'
-                + '</head><body>'
-                + '<div class="no-print"><button class="print-btn" onclick="window.print()">PDF로 저장 / 인쇄</button>'
-                + '<p style="color:#888;font-size:0.85rem;margin-top:0.5rem;">Chrome: 인쇄 창 → 대상: PDF로 저장</p></div>'
-                + buildContractHTML(d)
-                + '</body></html>');
+                +'<title>LaVella 계약서</title>'
+                +'<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">'
+                +'<style>body{font-family:"Noto Serif KR",serif;background:white;margin:0;padding:2rem;}'
+                +'@media print{@page{margin:15mm;}.no-print{display:none!important;}'
+                +'*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}'
+                +'.no-print{text-align:center;margin-bottom:2rem;}'
+                +'.print-btn{padding:1rem 3rem;background:#C9A96E;color:white;border:none;font-size:1rem;cursor:pointer;}</style>'
+                +'</head><body>'
+                +'<div class="no-print"><button class="print-btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>'
+                +buildContractHTML(d)
+                +'</body></html>');
             w.document.close();
         });
 
