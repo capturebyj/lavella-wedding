@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaVella · LumiereJ SNS Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A96E;
+  --dark-gold: #A68A5C;
+  --light-gold: #F5EFE0;
+  --cream: #FAF8F3;
+  --charcoal: #2C2C2C;
+  --soft-gray: #E8E6E1;
+  --white: #FFFFFF;
+  --lumiere: #8B9EC4;
+  --lumiere-light: #EEF1F8;
+  --text-muted: #888;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--charcoal); min-height:100vh; }
+
+/* ── HEADER ── */
+header {
+  background: var(--charcoal);
+  padding: 1.2rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top:0; z-index:100;
+  border-bottom: 1px solid rgba(201,169,110,0.3);
+}
+.header-brands { display: flex; align-items: center; gap: 1.5rem; }
+.brand-tag {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.brand-tag.lavella { color: var(--gold); border: 1px solid var(--gold); }
+.brand-tag.lumiere { color: var(--lumiere); border: 1px solid var(--lumiere); }
+.brand-tag.active.lavella { background: var(--gold); color: white; }
+.brand-tag.active.lumiere { background: var(--lumiere); color: white; }
+.header-title { font-family:'Noto Serif KR',serif; color: rgba(255,255,255,0.5); font-size:0.8rem; letter-spacing:2px; text-transform:uppercase; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--white);
+  border-bottom: 1px solid var(--soft-gray);
+  padding: 0 2rem;
+  gap: 0;
+}
+.tab {
+  padding: 1rem 1.5rem;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--charcoal); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── MAIN ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+/* ── SECTION ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--soft-gray);
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: var(--charcoal);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--soft-gray);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card-title .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold); display: inline-block;
+}
+
+/* ── BRAND GUIDE ── */
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.guide-item { background: var(--cream); padding: 1.2rem; }
+.guide-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; font-family:'DM Sans',sans-serif; }
+.guide-value { font-family: 'Noto Serif KR', serif; font-size: 0.9rem; line-height: 1.7; color: var(--charcoal); }
+.tone-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.tone-tag { background: var(--light-gold); color: var(--dark-gold); font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 2px; font-family:'DM Sans'; }
+.tone-tag.lumiere-t { background: var(--lumiere-light); color: var(--lumiere); }
+
+/* ── CONTENT GENERATOR ── */
+.gen-form { display: grid; gap: 1rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group label {
+  display: block;
+  font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 0.4rem;
+}
+.form-group select, .form-group input, .form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--soft-gray);
+  background: var(--cream);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.9rem;
+  color: var(--charcoal);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+  border-color: var(--gold);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.btn-generate {
+  padding: 0.9rem 2rem;
+  background: var(--gold);
+  color: white;
+  border: none;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-generate:hover { background: var(--dark-gold); }
+.btn-generate:disabled { background: var(--soft-gray); cursor: not-allowed; }
+
+.output-box {
+  background: var(--cream);
+  border: 1px solid var(--soft-gray);
+  padding: 1.5rem;
+  min-height: 120px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.9rem;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+}
+.output-placeholder { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
+.output-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--soft-gray);
+  background: var(--white);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.btn-small:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── LOADING ── */
+.loading-dots { display: flex; gap: 4px; align-items: center; }
+.loading-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+  animation: bounce 1s infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce {
+  0%,80%,100% { opacity:0.3; transform:scale(0.8); }
+  40% { opacity:1; transform:scale(1.1); }
+}
+
+/* ── CALENDAR ── */
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.calendar-nav { background: none; border: 1px solid var(--soft-gray); width: 32px; height: 32px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.calendar-nav:hover { border-color: var(--gold); color: var(--gold); }
+.calendar-month-label { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-header { text-align: center; font-size: 0.7rem; letter-spacing: 1px; color: var(--text-muted); padding: 0.4rem; text-transform: uppercase; }
+.cal-day {
+  min-height: 70px; padding: 6px;
+  background: var(--cream);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.cal-day:hover { border-color: var(--gold); }
+.cal-day.today { background: var(--light-gold); }
+.cal-day.other-month { opacity: 0.35; }
+.cal-day-num { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); }
+.cal-posts { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.cal-post-dot {
+  font-size: 0.6rem; padding: 1px 4px;
+  border-radius: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+.cal-post-dot.insta { background: #ffecd5; color: #b5651d; }
+.cal-post-dot.blog { background: #d5ffe8; color: #1d7a4a; }
+.cal-post-dot.reels { background: #f0d5ff; color: #7a1db5; }
+
+/* ── POST LIST ── */
+.post-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.post-item {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 1rem; background: var(--cream);
+  border-left: 3px solid var(--soft-gray);
+  cursor: pointer; transition: all 0.2s;
+  position: relative;
+}
+.post-item:hover { border-left-color: var(--gold); }
+.post-item.insta-type { border-left-color: #f0a060; }
+.post-item.blog-type { border-left-color: #60b87a; }
+.post-item.reels-type { border-left-color: #a060d0; }
+.post-meta { flex: 1; }
+.post-platform { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.2rem; }
+.post-title { font-family: 'Noto Serif KR', serif; font-size: 0.9rem; line-height: 1.5; }
+.post-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+.post-status {
+  font-size: 0.65rem; padding: 0.2rem 0.5rem;
+  border-radius: 2px; white-space: nowrap;
+}
+.status-draft { background: var(--soft-gray); color: var(--text-muted); }
+.status-scheduled { background: var(--light-gold); color: var(--dark-gold); }
+.status-published { background: #d5ffe8; color: #1d7a4a; }
+
+/* ── ADD POST MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset:0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  width: 90%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  padding: 2rem;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.modal-header h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+.modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-muted); }
+.modal-footer { margin-top: 1.5rem; display: flex; gap: 0.8rem; justify-content: flex-end; }
+.btn-cancel { padding: 0.7rem 1.5rem; border: 1px solid var(--soft-gray); background: none; cursor: pointer; font-family:'DM Sans'; }
+.btn-save { padding: 0.7rem 1.5rem; background: var(--gold); color: white; border: none; cursor: pointer; font-family:'Noto Serif KR',serif; }
+
+/* ── STRATEGY ── */
+.strategy-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.strat-block { background: var(--cream); padding: 1.2rem; }
+.strat-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.8rem; }
+.strat-items { list-style: none; }
+.strat-items li { font-family: 'Noto Serif KR', serif; font-size: 0.85rem; line-height: 1.8; padding-left: 1rem; position: relative; }
+.strat-items li::before { content: '—'; position: absolute; left:0; color: var(--gold); }
+
+.ratio-bar { display: flex; height: 8px; border-radius: 2px; overflow: hidden; margin: 0.5rem 0; }
+.ratio-seg { height: 100%; }
+
+/* ── HASHTAG ── */
+.hashtag-gen-row { display: flex; gap: 0.8rem; }
+.hashtag-gen-row input { flex: 1; }
+.hashtag-result { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; min-height: 40px; }
+.hashtag-chip {
+  background: var(--light-gold); color: var(--dark-gold);
+  font-size: 0.78rem; padding: 0.3rem 0.7rem;
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.hashtag-chip:hover { background: var(--gold); color: white; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:700px) {
+  .guide-grid, .form-row, .strategy-cols { grid-template-columns: 1fr; }
+  .tabs { overflow-x: auto; }
+  .main { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brands">
+    <div class="brand-tag lavella active" onclick="setBrand('lavella')">LaVella</div>
+    <div class="brand-tag lumiere" onclick="setBrand('lumiere')">LumiereJ</div>
+  </div>
+  <div class="header-title">SNS Marketing Manager</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('guide')">🎨 브랜드 가이드</div>
+  <div class="tab" onclick="showTab('generate')">✍️ 콘텐츠 생성</div>
+  <div class="tab" onclick="showTab('calendar')">📅 콘텐츠 캘린더</div>
+  <div class="tab" onclick="showTab('strategy')">📐 전략</div>
+  <div class="tab" onclick="showTab('hashtags')">🏷 해시태그</div>
+</div>
+
+<div class="main">
+
+  <!-- ── BRAND GUIDE ── -->
+  <div class="section active" id="section-guide">
+    <div id="guide-lavella">
+      <div class="card">
+        <div class="card-title"><span class="dot"></span> LaVella 브랜드 아이덴티티</div>
+        <div class="guide-grid">
+          <div class="guide-item">
+            <div class="guide-label">브랜드 의미</div>
+            <div class="guide-value">"La Vie Est Bella" — 인생은 아름답다<br><span style="color:var(--text-muted);font-size:0.82rem">본식 웨딩 촬영 / 1인 작가 시스템</span></div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">핵심 가치</div>
+            <div class="guide-value">진정성 · 일관성 · 집중<br>하루 1-2건 촬영으로 온전한 집중</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">톤 & 무드</div>
+            <div class="tone-tags">
+              <span class="tone-tag">조용하고 우아한</span>
+              <span class="tone-tag">감성적</span>
+              <span class="tone-tag">따뜻한 거리감</span>
+              <span class="tone-tag">격식있는 친근함</span>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">피해야 할 표현</div>
+            <div class="guide-value" style="color:#c0392b;font-size:0.85rem">❌ 과도한 감탄사 (와~! 대박!)<br>❌ 세일즈 압박 문구<br>❌ 지나친 이모지 남용</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">자주 사용할 어투</div>
+            <div class="guide-value">~드립니다 / ~함께합니다<br>~기억됩니다 / ~담아드립니다<br>조용하고 단정한 경어체</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">브랜드 컬러 키워드</div>
+            <div class="guide-value">Gold · Ivory · Warm Light<br><span style="font-size:0.8rem;color:var(--text-muted)">필름 감성 / 자연광 / 클래식</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span> 플랫폼별 운영 방향 (LaVella)</div>
+        <div class="guide-grid">
+          <div class="guide-item">
+            <div class="guide-label">📸 인스타그램 피드</div>
+            <div class="guide-value">작품 위주 · 최소한의 문구<br>감성 한 줄 + 해시태그<br>피드 일관성이 곧 브랜드</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">🎬 릴스</div>
+            <div class="guide-value">실제 본식 현장 무드컷<br>BGM 중심의 영상미<br>텍스트 최소화</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">📝 네이버 블로그</div>
+            <div class="guide-value">촬영 후기 / 웨딩홀별 가이드<br>정보 제공형 + SEO 최적화<br>예비 신랑신부 실질 도움</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">💬 소통 방식</div>
+            <div class="guide-value">DM 문의 → 따뜻하고 명확하게<br>댓글 → 짧고 진심있게<br>과도한 소통 지양</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="guide-lumiere" style="display:none">
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--lumiere)"></span> LumiereJ 브랜드 아이덴티티</div>
+        <div style="background:var(--lumiere-light);padding:1rem;margin-bottom:1rem;font-size:0.85rem;font-family:'Noto Serif KR',serif;color:var(--charcoal);line-height:1.8;">
+          💡 LumiereJ 브랜드 정보를 입력해주시면 맞춤 가이드를 완성해드릴 수 있어요.<br>아래는 기본 틀입니다 — 수정이 필요하면 말씀해주세요.
+        </div>
+        <div class="guide-grid">
+          <div class="guide-item">
+            <div class="guide-label">브랜드 의미</div>
+            <div class="guide-value">Lumière — 빛 (프랑스어)<br><span style="color:var(--text-muted);font-size:0.82rem">업종/서비스를 알려주시면 채워드릴게요</span></div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-label">톤 & 무드</div>
+            <div class="tone-tags">
+              <span class="tone-tag lumiere-t">세련된</span>
+              <span class="tone-tag lumiere-t">빛과 분위기</span>
+              <span class="tone-tag lumiere-t">편집적</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONTENT GENERATOR ── -->
+  <div class="section" id="section-generate">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> AI 콘텐츠 생성기</div>
+      <div class="gen-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>플랫폼</label>
+            <select id="gen-platform">
+              <option value="insta-feed">인스타 피드</option>
+              <option value="insta-reels">인스타 릴스 캡션</option>
+              <option value="blog">네이버 블로그</option>
+              <option value="insta-story">인스타 스토리</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>목적</label>
+            <select id="gen-purpose">
+              <option value="portfolio">포트폴리오 공개</option>
+              <option value="info">정보 제공</option>
+              <option value="package">패키지 안내</option>
+              <option value="review">고객 후기 공유</option>
+              <option value="branding">브랜딩 / 세계관</option>
+              <option value="inquiry">상담 유도</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>톤</label>
+            <select id="gen-tone">
+              <option value="elegant">우아하고 조용한</option>
+              <option value="warm">따뜻하고 감성적</option>
+              <option value="informative">정보 전달형</option>
+              <option value="minimal">미니멀 · 무드</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>키워드 / 소재 (선택)</label>
+            <input id="gen-keyword" type="text" placeholder="예: 그랜드볼룸 / 가을 웨딩 / 신부대기실">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>추가 요청사항</label>
+          <textarea id="gen-extra" placeholder="예: 해시태그 포함해서 / 블로그 글은 서울 웨딩홀 검색 유입을 위해 / 릴스는 2줄로 짧게"></textarea>
+        </div>
+        <button class="btn-generate" id="gen-btn" onclick="generateContent()">✦ 콘텐츠 생성하기</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> 생성된 콘텐츠</div>
+      <div class="output-box" id="gen-output">
+        <span class="output-placeholder">위에서 조건을 선택하고 생성하면 여기에 나타납니다.</span>
+      </div>
+      <div class="output-actions">
+        <button class="btn-small" onclick="copyOutput()">📋 복사</button>
+        <button class="btn-small" onclick="saveToCalendar()">📅 캘린더에 추가</button>
+        <button class="btn-small" onclick="regenerate()">🔄 다시 생성</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CALENDAR ── -->
+  <div class="section" id="section-calendar">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> 콘텐츠 캘린더
+        <button class="btn-small" style="margin-left:auto" onclick="openAddModal()">+ 게시물 추가</button>
+      </div>
+      <div class="calendar-header">
+        <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
+        <div class="calendar-month-label" id="cal-month-label"></div>
+        <button class="calendar-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="calendar-grid" id="cal-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> 게시물 목록</div>
+      <div class="post-list" id="post-list"></div>
+    </div>
+  </div>
+
+  <!-- ── STRATEGY ── -->
+  <div class="section" id="section-strategy">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> LaVella SNS 콘텐츠 전략</div>
+      <div class="strategy-cols">
+        <div class="strat-block">
+          <div class="strat-label">📸 인스타그램 피드 전략</div>
+          <ul class="strat-items">
+            <li>주 2-3회 포트폴리오 사진 게시</li>
+            <li>피드 색감 통일 — 따뜻한 골드/아이보리 계열</li>
+            <li>문구는 1-2문장 이내로 절제</li>
+            <li>감성 한 줄 + 웨딩홀명 태그 전략</li>
+            <li>스토리로 일상/촬영 뒷이야기 보완</li>
+          </ul>
+        </div>
+        <div class="strat-block">
+          <div class="strat-label">🎬 릴스 전략</div>
+          <ul class="strat-items">
+            <li>월 2-4회 — 양보다 질</li>
+            <li>실제 본식 영상 편집 (15-30초)</li>
+            <li>BGM 선택이 브랜드 이미지 결정</li>
+            <li>웨딩홀명 검색 유입 노려서 장소 표시</li>
+            <li>첫 3초 후킹 — 신부 입장 or 감동 순간</li>
+          </ul>
+        </div>
+        <div class="strat-block">
+          <div class="strat-label">📝 블로그 전략</div>
+          <ul class="strat-items">
+            <li>웨딩홀명 + 본식 사진 키워드 SEO 공략</li>
+            <li>"[웨딩홀명] 본식 사진 후기" 제목 패턴</li>
+            <li>월 2-4개 꾸준한 업로드</li>
+            <li>패키지 안내 글 1개 상위 노출 관리</li>
+            <li>고객 동의 후기 활용으로 신뢰도 구축</li>
+          </ul>
+        </div>
+        <div class="strat-block">
+          <div class="strat-label">📊 월별 콘텐츠 비율 (권장)</div>
+          <div style="margin:0.5rem 0">
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">인스타 피드 50%</div>
+            <div class="ratio-bar">
+              <div class="ratio-seg" style="width:50%;background:var(--gold)"></div>
+              <div class="ratio-seg" style="width:25%;background:#a060d0"></div>
+              <div class="ratio-seg" style="width:25%;background:#60b87a"></div>
+            </div>
+            <div style="display:flex;gap:1rem;font-size:0.72rem;color:var(--text-muted);margin-top:4px">
+              <span>🟡 피드 50%</span><span>🟣 릴스 25%</span><span>🟢 블로그 25%</span>
+            </div>
+          </div>
+          <ul class="strat-items" style="margin-top:0.5rem">
+            <li>월 총 콘텐츠 12-16개 권장</li>
+            <li>성수기(봄/가을) 업로드 집중</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> 소통 전략 — 어떤 무드로 쓸까?</div>
+      <div class="strategy-cols">
+        <div class="strat-block" style="border-left: 3px solid var(--gold)">
+          <div class="strat-label">✅ LaVella 권장 소통 방식</div>
+          <ul class="strat-items">
+            <li><strong>피드</strong> → 정보 없이 무드만 / 극도로 절제</li>
+            <li><strong>블로그</strong> → 정보 제공 + 따뜻한 후기 형식</li>
+            <li><strong>DM 답변</strong> → 친절하되 격식 유지</li>
+            <li><strong>댓글</strong> → 짧게, 진심 있게</li>
+            <li><strong>스토리</strong> → 가장 자유롭게 / 뒷이야기</li>
+          </ul>
+        </div>
+        <div class="strat-block">
+          <div class="strat-label">💡 "조용한 브랜딩"의 힘</div>
+          <ul class="strat-items">
+            <li>말이 적을수록 사진이 말한다</li>
+            <li>설명하지 않는 것이 고급스러움</li>
+            <li>고객이 먼저 DM을 보내게 하는 피드</li>
+            <li>할인/이벤트 없이도 가치를 유지</li>
+            <li>일관성이 곧 신뢰 = 예약으로 연결</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HASHTAGS ── -->
+  <div class="section" id="section-hashtags">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> AI 해시태그 생성기</div>
+      <div class="hashtag-gen-row">
+        <div class="form-group" style="flex:1">
+          <label>주제 / 키워드</label>
+          <input id="ht-keyword" type="text" placeholder="예: 롯데호텔 본식 / 가을 웨딩 / 신부대기실">
+        </div>
+        <div class="form-group">
+          <label>개수</label>
+          <select id="ht-count">
+            <option>10개</option>
+            <option selected>20개</option>
+            <option>30개</option>
+          </select>
+        </div>
+        <button class="btn-generate" style="align-self:flex-end;white-space:nowrap" onclick="generateHashtags()">생성</button>
+      </div>
+      <div class="hashtag-result" id="ht-result">
+        <span style="color:var(--text-muted);font-size:0.85rem;font-style:italic">생성하면 여기에 표시됩니다. 클릭하면 복사됩니다.</span>
+      </div>
+      <div class="output-actions" style="margin-top:0.5rem">
+        <button class="btn-small" onclick="copyAllHashtags()">📋 전체 복사</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> LaVella 고정 해시태그 세트</div>
+      <div style="margin-bottom:1rem">
+        <div class="strat-label" style="margin-bottom:0.5rem">기본 세트 (항상 포함)</div>
+        <div class="hashtag-result">
+          <span class="hashtag-chip">#라벨라</span>
+          <span class="hashtag-chip">#lavella</span>
+          <span class="hashtag-chip">#본식사진</span>
+          <span class="hashtag-chip">#본식촬영</span>
+          <span class="hashtag-chip">#웨딩사진작가</span>
+          <span class="hashtag-chip">#웨딩스냅</span>
+          <span class="hashtag-chip">#결혼식사진</span>
+          <span class="hashtag-chip">#1인작가</span>
+        </div>
+      </div>
+      <div>
+        <div class="strat-label" style="margin-bottom:0.5rem">감성 세트 (피드용)</div>
+        <div class="hashtag-result">
+          <span class="hashtag-chip">#weddingphotography</span>
+          <span class="hashtag-chip">#weddingday</span>
+          <span class="hashtag-chip">#brideandgroom</span>
+          <span class="hashtag-chip">#filmwedding</span>
+          <span class="hashtag-chip">#라비에스트벨라</span>
+          <span class="hashtag-chip">#인생은아름답다</span>
+          <span class="hashtag-chip">#웨딩무드</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ADD POST MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>게시물 추가</h3>
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+    </div>
+    <div class="gen-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>플랫폼</label>
+          <select id="m-platform">
+            <option value="insta">인스타그램 피드</option>
+            <option value="reels">릴스</option>
+            <option value="blog">블로그</option>
+            <option value="story">스토리</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>날짜</label>
+          <input type="date" id="m-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>제목 / 내용 요약</label>
+        <input type="text" id="m-title" placeholder="예: 롯데호텔 가을 본식">
+      </div>
+      <div class="form-group">
+        <label>상태</label>
+        <select id="m-status">
+          <option value="draft">초안</option>
+          <option value="scheduled">예약됨</option>
+          <option value="published">게시됨</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAddModal()">취소</button>
+      <button class="btn-save" onclick="savePost()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let currentBrand = 'lavella';
+let currentTab = 'guide';
+let calYear, calMonth;
+let posts = JSON.parse(localStorage.getItem('sns_posts') || '[]');
+let lastGenerated = '';
+
+const today = new Date();
+calYear = today.getFullYear();
+calMonth = today.getMonth();
+
+// ── BRAND ──
+function setBrand(b) {
+  currentBrand = b;
+  document.querySelectorAll('.brand-tag').forEach(el => {
+    el.classList.remove('active');
+    if(el.classList.contains(b === 'lavella' ? 'lavella' : 'lumiere')) el.classList.add('active');
+  });
+  document.getElementById('guide-lavella').style.display = b === 'lavella' ? 'block' : 'none';
+  document.getElementById('guide-lumiere').style.display = b === 'lumiere' ? 'block' : 'none';
+  document.querySelectorAll('.dot').forEach(d => {
+    d.style.background = b === 'lavella' ? 'var(--gold)' : 'var(--lumiere)';
+  });
+}
+
+// ── TABS ──
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['guide','generate','calendar','strategy','hashtags'][i] === tab);
+  });
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById('section-' + tab).classList.add('active');
+  if(tab === 'calendar') renderCalendar();
+}
+
+// ── AI CONTENT GENERATOR ──
+async function generateContent() {
+  const platform = document.getElementById('gen-platform').value;
+  const purpose = document.getElementById('gen-purpose').value;
+  const tone = document.getElementById('gen-tone').value;
+  const keyword = document.getElementById('gen-keyword').value;
+  const extra = document.getElementById('gen-extra').value;
+  const btn = document.getElementById('gen-btn');
+  const output = document.getElementById('gen-output');
+
+  const platformLabels = {
+    'insta-feed':'인스타그램 피드 게시물',
+    'insta-reels':'인스타그램 릴스 캡션',
+    'blog':'네이버 블로그 글',
+    'insta-story':'인스타그램 스토리'
+  };
+  const purposeLabels = {
+    'portfolio':'포트폴리오 사진 공개',
+    'info':'정보 제공',
+    'package':'패키지/가격 안내',
+    'review':'고객 후기 공유',
+    'branding':'브랜드 세계관 표현',
+    'inquiry':'상담 문의 유도'
+  };
+  const toneLabels = {
+    'elegant':'우아하고 조용한 톤 — 말을 아끼고 감성으로 전달',
+    'warm':'따뜻하고 감성적인 톤 — 진심 어린 표현',
+    'informative':'정보 전달형 — 명확하고 도움이 되는 내용 위주',
+    'minimal':'미니멀 무드 — 1-2줄, 시적인 표현'
+  };
+
+  btn.disabled = true;
+  output.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+  const brandContext = currentBrand === 'lavella' 
+    ? `브랜드명: LaVella (라벨라) / 슬로건: "La Vie Est Bella" (인생은 아름답다) / 본식 웨딩 촬영 전문 1인 작가 스튜디오 / 패키지: Essentiel 60만원, Classique 85만원, Prestige 115만원 / 브랜드 톤: 조용하고 우아함, 격식 있는 경어체, 과도한 감탄사 없음`
+    : `브랜드명: LumiereJ / 빛을 담는 감성 브랜드`;
+
+  const prompt = `당신은 ${brandContext}를 위한 SNS 마케팅 전문가입니다.
+
+다음 조건에 맞는 SNS 게시물을 작성해주세요:
+- 플랫폼: ${platformLabels[platform]}
+- 목적: ${purposeLabels[purpose]}  
+- 톤: ${toneLabels[tone]}
+${keyword ? `- 키워드/소재: ${keyword}` : ''}
+${extra ? `- 추가 요청: ${extra}` : ''}
+
+작성 규칙:
+1. 브랜드 이미지에 맞게 격식 있는 경어체 사용
+2. 과도한 감탄사(와~!, 대박! 등) 사용 금지
+3. 이모지는 최소화 (필요시 1-2개)
+4. 인스타 피드/릴스는 간결하게, 블로그는 풍성하게
+5. 자연스럽고 진심 있는 어투
+6. 블로그라면 제목도 포함
+
+게시물만 바로 작성해주세요 (설명 없이):`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    lastGenerated = data.content[0].text;
+    output.textContent = lastGenerated;
+  } catch(e) {
+    output.textContent = '생성 중 오류가 발생했습니다. 다시 시도해주세요.';
+  }
+  btn.disabled = false;
+}
+
+function regenerate() { generateContent(); }
+
+function copyOutput() {
+  if(!lastGenerated) return;
+  navigator.clipboard.writeText(lastGenerated).then(() => alert('복사되었습니다!'));
+}
+
+function saveToCalendar() {
+  if(!lastGenerated) return;
+  openAddModal();
+  document.getElementById('m-title').value = lastGenerated.substring(0, 40) + '...';
+}
+
+// ── HASHTAG GENERATOR ──
+async function generateHashtags() {
+  const keyword = document.getElementById('ht-keyword').value;
+  const count = document.getElementById('ht-count').value.replace('개','');
+  const result = document.getElementById('ht-result');
+
+  if(!keyword) { result.innerHTML = '<span style="color:red;font-size:0.85rem">키워드를 입력해주세요</span>'; return; }
+
+  result.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+  const prompt = `LaVella 본식 웨딩 촬영 브랜드의 인스타그램 해시태그를 생성해주세요.
+
+키워드: ${keyword}
+개수: ${count}개
+
+조건:
+- 한국어 해시태그와 영어 해시태그 혼합
+- 검색량이 높은 웨딩 관련 태그 위주
+- 웨딩홀명이 있다면 관련 태그 포함
+- 해시태그만 나열 (설명 없이, 줄바꿈으로 구분)
+- # 기호 포함하여 작성`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const tags = data.content[0].text.trim().split(/\s+/).filter(t => t.startsWith('#'));
+    result.innerHTML = tags.map(t => `<span class="hashtag-chip" onclick="copyTag('${t}')">${t}</span>`).join('');
+  } catch(e) {
+    result.innerHTML = '<span style="color:red;font-size:0.85rem">오류가 발생했습니다</span>';
+  }
+}
+
+function copyTag(t) {
+  navigator.clipboard.writeText(t);
+}
+
+function copyAllHashtags() {
+  const chips = document.querySelectorAll('#ht-result .hashtag-chip');
+  const text = Array.from(chips).map(c => c.textContent).join(' ');
+  navigator.clipboard.writeText(text).then(() => alert('전체 복사되었습니다!'));
+}
+
+// ── CALENDAR ──
+function renderCalendar() {
+  const label = document.getElementById('cal-month-label');
+  const grid = document.getElementById('cal-grid');
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  label.textContent = `${calYear}년 ${calMonth+1}월`;
+
+  const days = ['일','월','화','수','목','금','토'];
+  let html = days.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const prevDays = new Date(calYear, calMonth, 0).getDate();
+
+  for(let i = 0; i < first; i++) {
+    const d = prevDays - first + i + 1;
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  for(let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayPosts = posts.filter(p => p.date === dateStr);
+    const dotsHtml = dayPosts.map(p => {
+      const cls = p.platform === 'insta' ? 'insta' : p.platform === 'reels' ? 'reels' : 'blog';
+      return `<div class="cal-post-dot ${cls}">${p.title.substring(0,8)}</div>`;
+    }).join('');
+    html += `<div class="cal-day${isToday?' today':''}" onclick="openAddModal('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      <div class="cal-posts">${dotsHtml}</div>
+    </div>`;
+  }
+
+  const remaining = 42 - first - daysInMonth;
+  for(let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+  }
+
+  grid.innerHTML = html;
+  renderPostList();
+}
+
+function renderPostList() {
+  const list = document.getElementById('post-list');
+  const monthPosts = posts.filter(p => {
+    const d = new Date(p.date);
+    return d.getFullYear() === calYear && d.getMonth() === calMonth;
+  }).sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  if(monthPosts.length === 0) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:1rem">이 달에 등록된 게시물이 없습니다. 달력을 클릭해 추가하세요.</div>';
+    return;
+  }
+
+  const platformLabel = { insta:'📸 인스타 피드', reels:'🎬 릴스', blog:'📝 블로그', story:'💫 스토리' };
+  const statusLabel = { draft:'초안', scheduled:'예약됨', published:'게시됨' };
+
+  list.innerHTML = monthPosts.map((p, i) => `
+    <div class="post-item ${p.platform}-type">
+      <div class="post-meta">
+        <div class="post-platform">${platformLabel[p.platform] || p.platform}</div>
+        <div class="post-title">${p.title}</div>
+        <div class="post-date">${p.date}</div>
+      </div>
+      <span class="post-status status-${p.status}">${statusLabel[p.status]}</span>
+      <button class="btn-small" style="margin-left:0.5rem" onclick="deletePost(${posts.indexOf(p)})">✕</button>
+    </div>
+  `).join('');
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if(calMonth > 11) { calMonth = 0; calYear++; }
+  if(calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+// ── MODAL ──
+function openAddModal(date) {
+  if(date) document.getElementById('m-date').value = date;
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+function savePost() {
+  const post = {
+    platform: document.getElementById('m-platform').value,
+    date: document.getElementById('m-date').value,
+    title: document.getElementById('m-title').value || '(제목없음)',
+    status: document.getElementById('m-status').value
+  };
+  posts.push(post);
+  localStorage.setItem('sns_posts', JSON.stringify(posts));
+  closeAddModal();
+  renderCalendar();
+  document.getElementById('m-title').value = '';
+}
+function deletePost(idx) {
+  if(confirm('삭제할까요?')) {
+    posts.splice(idx, 1);
+    localStorage.setItem('sns_posts', JSON.stringify(posts));
+    renderCalendar();
+  }
+}
+
+// ── INIT ──
+renderCalendar();
+</script>
+</body>
+</html>
